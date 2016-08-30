@@ -1,7 +1,7 @@
 require 'delegate'
 
-module FlavourSaver
-  module Helpers
+class FlavourSaver
+  class Helpers
     class Defaults
       def with(args)
         yield.contents args
@@ -64,6 +64,7 @@ module FlavourSaver
         @source = source
         mixin = Module.new do
           locals.each do |name,impl|
+            next if name == :__fs
             define_method name, &impl
           end
         end
@@ -95,8 +96,6 @@ module FlavourSaver
         @source.send(name, *args, &b) if @source.respond_to? name
       end
     end
-
-    module_function
 
     def registered_helpers
       @registered_helpers ||= {}

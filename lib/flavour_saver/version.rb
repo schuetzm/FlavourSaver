@@ -1,3 +1,3 @@
-module FlavourSaver
+class FlavourSaver
   VERSION = "2.0.2"
 end
