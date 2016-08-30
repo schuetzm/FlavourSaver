@@ -2,7 +2,7 @@ require 'rltk'
 require 'rltk/ast'
 require 'flavour_saver/nodes'
 
-module FlavourSaver
+class FlavourSaver
   class Parser < RLTK::Parser
 
     class UnbalancedBlockError < StandardError; end
@@ -133,7 +133,7 @@ module FlavourSaver
       clause('argument_list WHITE hash') { |e0,_,e1| e0 + [e1] }
       clause('hash') { |e| [e] }
     end
-    
+
     nonempty_list(:argument_list, [:object_path,:lit, :local, :subexpr], :WHITE)
 
     production(:lit) do

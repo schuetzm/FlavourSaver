@@ -1,6 +1,6 @@
 require 'rltk'
 
-module FlavourSaver
+class FlavourSaver
   class Lexer < RLTK::Lexer
 
      # seems to have problem with hash symbol in regex

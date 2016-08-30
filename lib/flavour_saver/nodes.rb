@@ -2,7 +2,7 @@ require 'rltk'
 require 'rltk/ast'
 require 'flavour_saver/nodes'
 
-module FlavourSaver
+class FlavourSaver
   class Node < RLTK::ASTNode
     def inspect
       to_s.inspect

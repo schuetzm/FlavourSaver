@@ -1,6 +1,6 @@
 require 'cgi'
 
-module FlavourSaver
+class FlavourSaver
   UnknownNodeTypeException          = Class.new(StandardError)
   UnknownContextException           = Class.new(StandardError)
   InappropriateUseOfElseException   = Class.new(StandardError)
@@ -15,6 +15,7 @@ module FlavourSaver
     end
 
     def initialize(ast, context=nil, locals={}, helpers=[],parent=nil)
+      @fs = locals[:__fs]
       @ast = ast
       @locals = locals
       @helpers = helpers
@@ -106,7 +107,7 @@ module FlavourSaver
       if defined?(::Rails)
         context.send(:render, :partial => node.name, :object => _context)
       else
-        partial = Partial.fetch(node.name)
+        partial = @fs.partial.fetch(node.name)
         if partial.respond_to? :call
           partial.call(_context)
         else
@@ -116,7 +117,7 @@ module FlavourSaver
     end
 
     def evaluate_call(call, context=self.context, &block)
-      context = Helpers.decorate_with(context,@helpers,@locals) unless context.is_a? Helpers::Decorator
+      context = @fs.helpers.decorate_with(context,@helpers,@locals) unless context.is_a? Helpers::Decorator
       case call
       when ParentCallNode
         depth = call.depth

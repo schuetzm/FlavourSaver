@@ -1,7 +1,7 @@
 require "flavour_saver/version"
 require 'tilt'
 
-module FlavourSaver
+class FlavourSaver
 
   autoload :Lexer,          'flavour_saver/lexer'
   autoload :Parser,         'flavour_saver/parser'
@@ -34,8 +34,6 @@ module FlavourSaver
     @partial_handler = Partial
   end
 
-  module_function
-
   def lex(template)
     Lexer.lex(template)
   end
@@ -45,23 +43,23 @@ module FlavourSaver
   end
 
   def evaluate(template,context)
-    Runtime.run(parse(lex(template)), context)
+    Runtime.run(parse(lex(template)), context, __fs: self)
   end
 
   def register_helper(*args,&b)
-    Helpers.register_helper(*args,&b)
+    helpers.register_helper(*args,&b)
   end
 
   def reset_helpers
-    Helpers.reset_helpers
+    helpers.reset_helpers
   end
 
   def register_partial(name,content=nil,&block)
-    Partial.register_partial(name,content,&block)
+    partial.register_partial(name,content,&block)
   end
 
   def reset_partials
-    Partial.reset_partials
+    partial.reset_partials
   end
 
   def logger
@@ -70,6 +68,24 @@ module FlavourSaver
 
   def logger=(logger)
     @logger=logger
+  end
+
+  def helpers
+    @helpers ||= Helpers.new
+  end
+
+  def partial
+    @partial ||= Partial.new
+  end
+
+  def create_template template
+    this = self
+    result = Tilt['handlebars'].new { template }
+    result.send :define_singleton_method, :render do |scope=nil, locals={}, &block|
+      locals = locals.dup.merge(__fs: this)
+      super(scope, locals, &block)
+    end
+    result
   end
 
   Tilt.register(Template, 'handlebars', 'hbs')

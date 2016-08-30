@@ -1,6 +1,6 @@
 require 'tilt/template'
 
-module FlavourSaver
+class FlavourSaver
   class Template < Tilt::Template
 
     def self.engine_initialized?
